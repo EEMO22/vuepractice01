@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { getAuthFromCookie, getUserFromCookie } from '@/utils/cookies';
+import { saveAuthToCookie, saveUserToCookie } from '@/utils/cookies';
+import { loginUser } from '@/api/index';
 
 Vue.useAttrs(Vuex);
 
@@ -31,5 +33,19 @@ export default new Vuex.Store({
         setToken(state, token) {
             state.token = token;
         }
+    },
+    actions: {
+        async LOGIN({ commit }, userData) {
+            const { data } = await loginUser(userData); //  api 호출
+            commit('setToken', data.token);
+            commit('setUsername', data.user.username);
+            saveAuthToCookie(data.token);
+            saveUserToCookie(data.user.username);
+            return data;
+        }
+        //  actions - 비동기 처리를 위함
+        //  LoginForm.vue 컴포넌트에 로그인 이후 처리에 대한 비즈니스 로직 너무 많음
+        //  컴포넌트단의 코드를 최대한 간결히 -> Vuex Store의 Actions 속성 이용
+        //  return data -> 나중에 활용 가능성 열어두기
     }
 });
