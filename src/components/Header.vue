@@ -1,5 +1,5 @@
 <template>
-    
+
     <template v-if="isUserLogin">
         <span>{{ $store.state.username }}</span>
     </template>
